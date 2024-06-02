@@ -1,0 +1,42 @@
+.rootHeader {
+  width: 100%;
+  padding: 2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rootNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+}
+
+.rootLogo {
+  width: 85px;
+  height: 40px;
+}
+
+.rootLocation {
+  width: max-content;
+  height: 2.375rem;
+  padding: .5rem;
+  border-radius: 6px;
+  background-color: var(--brand-purple-light);
+  color: var(--brand-purple-dark);
+  font-size: .875rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.rootCart {
+  width: max-content;
+  height: 2.375rem;
+  padding: .5rem;
+  border-radius: 6px;
+  background-color: var(--brand-yellow-light);
+}

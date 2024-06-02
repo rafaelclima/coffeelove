@@ -1,0 +1,103 @@
+.success-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 5rem;
+}
+
+.success-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.success-texts-title h2 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 2rem;
+  font-weight: bolder;
+  color: var(--brand-yellow-dark);
+}
+
+.success-texts-title p {
+  font-size: 1.25rem;
+  color: var(--base-subtitle);
+}
+
+.success-texts-delivery-info {
+  position: relative;
+  padding: 2.5rem;
+  border-radius: 6px 36px; /* Ajuste conforme necessário */
+  z-index: 1; 
+
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.success-texts-delivery-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit; /* Herda o border-radius do elemento pai */
+  padding: 1px; /* Ajuste conforme a espessura da borda desejada */
+  background: linear-gradient(to right, #DBAC2C, #8047F8);
+  
+  /* WebKit mask */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; 
+
+  /* Standard mask */
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude; 
+
+  z-index: -1;
+}
+
+.success-texts-delivery-address {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; 
+  height: 32px;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.icon-circle.icon-map {
+  background-color: var(--brand-purple);
+}
+
+.icon-circle.icon-clock {
+  background-color: var(--brand-yellow);
+}
+
+.icon-circle.icon-dollar {
+  background-color: var(--brand-yellow-dark);
+}
+
+.icon-circle svg {
+  display: block;
+}
+
+.success-texts-delivery-address p {
+  color: var(--base-text);
+}
+
+.success-image {
+  align-self: flex-end;
+}

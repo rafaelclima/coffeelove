@@ -1,0 +1,205 @@
+.checkout-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  margin-top: 2.5rem;
+  gap: 2rem;
+}
+
+.checkout-order {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.checkout-order h2 {
+  margin-bottom: .25rem;
+}
+
+.checkout-order h2, .checkout-confirm-order h2 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  font-family: 'Baloo 2', sans-serif;
+  color: var(--base-subtitle);
+}
+
+.checkout-address, .checkout-choose-payment {
+  padding: 2.5rem;
+  background-color: var(--base-card);
+  border-radius: 6px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.address-title, .payment-title {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.address-title h3, .payment-title h3 {
+  color: var(--base-subtitle);
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.address-title p, .payment-title p {
+  color: var(--base-text);
+  font-size: .875rem;
+  font-weight: normal;
+}
+
+/* Grid Form */
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 60px; 
+  gap: 1rem;
+  max-width: 560px;
+  width: 100%;
+}
+
+.grid-form input {
+  height: 42px;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #EDEDED;
+}
+
+/* Layout Specifics */
+#cep {
+  grid-column: span 1;
+}
+
+#rua {
+  grid-column: span 4;
+}
+
+#numero {
+  grid-column: span 1;
+}
+
+#complemento {
+  grid-column: span 3;
+}
+
+#bairro {
+  grid-column: span 1;
+}
+
+#cidade {
+  grid-column: span 2; /* Ocupa três colunas */
+}
+
+#uf {
+  grid-column: 4; /* Ocupa a quarta coluna */
+  width: 60px;
+  justify-self: center; /* Ajusta a posição horizontal para o centro */
+}
+
+.payment-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: var(--base-button);
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+}
+
+.payment-option:hover {
+  background-color: var(--base-hover);
+}
+
+.payment-option.payment-selected {
+  background-color: var(--brand-purple-light);
+  outline: 1px solid var(--brand-purple);
+}
+
+.payment-option span {
+  align-self: center;
+  text-transform: uppercase;
+  font-size: .75rem;
+  color: var(--base-text);
+  line-height: 1.6;
+  margin-top: 1px;
+}
+
+.payment-option input {
+  display: none;
+}
+
+.payment-option svg {
+  margin-right: 12px;
+}
+
+.confirm-container {
+  max-width: 28rem;
+  padding: 2.5rem;
+  border-radius: 6px 44px;
+  background-color: var(--base-card);
+  margin-top: 1rem;
+
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.confirm-container hr {
+  border: 1px solid var(--base-button);
+}
+
+.confirm-total-container {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.confirm-total-itens,
+.confirm-total-delivery,
+.confirm-total-totalPrice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.confirm-total-itens p,
+.confirm-total-delivery p {
+  font-family: 'Roboto', sans-serif;
+  font-size: .875rem;
+  font-weight: 400;
+  color: var(--base-text);
+}
+
+.confirm-total-totalPrice {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--base-subtitle);
+}
+
+.confirm-total-button {
+  width: 100%;
+  border: none;
+  padding: .75rem .5rem;
+  background-color: var(--brand-yellow);
+  color: var(--white);
+  border-radius: .375rem;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  transition: all .3s ease-in-out;
+}
+
+.confirm-total-button:hover {
+  background-color: var(--brand-yellow-dark);
+}
