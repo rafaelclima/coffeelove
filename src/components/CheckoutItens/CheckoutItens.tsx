@@ -9,8 +9,11 @@ interface CoffeeCheckoutProps {
 }
 
 export function CheckoutItens({ id }: CoffeeCheckoutProps) {
-  const { coffeesOnCart, handleChangeQuantityCoffeeOnCheckout } =
-    useContext(CheckoutContext);
+  const {
+    coffeesOnCart,
+    handleChangeQuantityCoffeeOnCheckout,
+    handleRemoveCoffeeOnCheckout,
+  } = useContext(CheckoutContext);
   const coffeeOnCartCheckout = coffeesOnCart.find((coffee) => coffee.id === id);
   const price = coffeeOnCartCheckout?.price ?? 0;
   const quantity = coffeeOnCartCheckout?.quantidade ?? 1;
@@ -48,7 +51,7 @@ export function CheckoutItens({ id }: CoffeeCheckoutProps) {
           </div>
 
           <div className={styles["checkout-itens-button"]}>
-            <button>
+            <button onClick={() => handleRemoveCoffeeOnCheckout(id)}>
               <Trash2
                 size={16}
                 color="#8047F8"

@@ -18,6 +18,7 @@ interface CheckoutContextProps {
   coffeesOnCart: CoffeeCheckoutProps[];
   handleAddCoffeeOnCheckout: (id: number) => void;
   handleChangeQuantityCoffeeOnCheckout: (id: number, delta: number) => void;
+  handleRemoveCoffeeOnCheckout: (id: number) => void;
 }
 
 export const CheckoutContext = createContext<CheckoutContextProps>({
@@ -26,6 +27,7 @@ export const CheckoutContext = createContext<CheckoutContextProps>({
   coffeesOnCart: [],
   handleAddCoffeeOnCheckout: () => {},
   handleChangeQuantityCoffeeOnCheckout: () => {},
+  handleRemoveCoffeeOnCheckout: () => {},
 });
 
 export function CheckoutContextProvider({ children }: { children: ReactNode }) {
@@ -64,7 +66,6 @@ export function CheckoutContextProvider({ children }: { children: ReactNode }) {
       state.map((coffee) => {
         if (coffee.id === id) {
           const newQuantidade = (coffee.quantidade ?? 1) + delta;
-          console.log(newQuantidade);
           return {
             ...coffee,
             quantidade: newQuantidade < 1 ? 1 : newQuantidade,
@@ -83,12 +84,18 @@ export function CheckoutContextProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function handleRemoveCoffeeOnCheckout(id: number) {
+    const removeCoffee = coffeesOnCart.filter((coffee) => coffee.id !== id);
+    setCoffeesOnCart(removeCoffee);
+  }
+
   const coffeesContext: CheckoutContextProps = {
     coffeesList,
     handleChangeAmountCoffee,
     coffeesOnCart,
     handleAddCoffeeOnCheckout,
     handleChangeQuantityCoffeeOnCheckout,
+    handleRemoveCoffeeOnCheckout,
   };
 
   return (

@@ -9,6 +9,7 @@ import { SetStateAction, useContext, useState } from "react";
 
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
+import React from "react";
 import styles from "./Checkout.module.css";
 
 export function Checkout() {
@@ -165,10 +166,10 @@ export function Checkout() {
         <div className={styles["confirm-container"]}>
           {coffeesOnCart &&
             coffeesOnCart.map((coffee) => (
-              <>
+              <React.Fragment key={coffee.id}>
                 <CheckoutItens key={coffee.id} id={coffee.id} />
                 <hr />
-              </>
+              </React.Fragment>
             ))}
 
           <div className={styles["confirm-total-container"]}>
