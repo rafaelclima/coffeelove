@@ -5,11 +5,14 @@ import {
   Landmark,
   MapPinned,
 } from "lucide-react";
-import styles from "./Checkout.module.css";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useContext, useState } from "react";
+
+import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
+import styles from "./Checkout.module.css";
 
 export function Checkout() {
+  const { coffeesOnCart } = useContext(CheckoutContext);
   const [escolha, setEscolha] = useState("");
 
   const handleEscolha = (event: {
@@ -17,6 +20,16 @@ export function Checkout() {
   }) => {
     setEscolha(event.target.value);
   };
+
+  const totalItensOnCart = coffeesOnCart.reduce((acc, item) => {
+    acc += item.quantidade;
+    return acc;
+  }, 0);
+
+  const totalOrderPrice = coffeesOnCart.reduce((acc, item) => {
+    acc += item.quantidade * item.price;
+    return acc;
+  }, 0);
 
   return (
     <main className={styles["checkout-container"]}>
@@ -150,15 +163,18 @@ export function Checkout() {
       <section className={styles["checkout-confirm-order"]}>
         <h2>Cafés selecionados</h2>
         <div className={styles["confirm-container"]}>
-          <CheckoutItens />
-          <hr />
-          <CheckoutItens />
-          <hr />
+          {coffeesOnCart &&
+            coffeesOnCart.map((coffee) => (
+              <>
+                <CheckoutItens key={coffee.id} id={coffee.id} />
+                <hr />
+              </>
+            ))}
 
           <div className={styles["confirm-total-container"]}>
             <div className={styles["confirm-total-itens"]}>
               <p>Total de itens</p>
-              <span>R$ 99,99</span>
+              <span>{totalItensOnCart}</span>
             </div>
             <div className={styles["confirm-total-delivery"]}>
               <p>Entrega</p>
@@ -166,7 +182,7 @@ export function Checkout() {
             </div>
             <div className={styles["confirm-total-totalPrice"]}>
               <p>Total</p>
-              <span>R$ 99,99</span>
+              <span>R$ {totalOrderPrice.toFixed(2)}</span>
             </div>
           </div>
 

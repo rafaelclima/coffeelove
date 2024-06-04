@@ -1,11 +1,14 @@
+import { CheckoutContextProvider } from "./contexts/CheckoutContext";
 import { RouterProvider } from "react-router-dom";
-import styles from "./App.module.css";
 import { router } from "./Router";
+import styles from "./App.module.css";
 
 function App() {
   return (
     <div className={styles.wrapper}>
-      <RouterProvider router={router} />
+      <CheckoutContextProvider>
+        <RouterProvider router={router} />
+      </CheckoutContextProvider>
     </div>
   );
 }

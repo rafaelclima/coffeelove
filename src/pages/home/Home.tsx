@@ -6,12 +6,15 @@ import {
   Plus,
   ShoppingCart,
 } from "lucide-react";
-import styles from "./Home.module.css";
+
+import { CheckoutContext } from "../../contexts/CheckoutContext";
 import imgHero from "../../assets/coffeeLove_Hero.png";
-import coffeeMenu from "../../data.json";
+import styles from "./Home.module.css";
+import { useContext } from "react";
 
 export function Home() {
-  const { coffees } = coffeeMenu;
+  const { coffeesList, handleChangeAmountCoffee, handleAddCoffeeOnCheckout } =
+    useContext(CheckoutContext);
 
   return (
     <>
@@ -20,7 +23,7 @@ export function Home() {
           <div className={styles.heroTitle}>
             <h1>Encontre o café perfeito para qualquer hora do dia</h1>
             <p>
-              Com o Coffee Love você recebe seu café onde estiver, a qualquer
+              Com a Coffee Love você recebe seu café onde estiver, a qualquer
               hora.
             </p>
           </div>
@@ -84,13 +87,13 @@ export function Home() {
       <section className={styles.menu}>
         <h2>Nossos cafés</h2>
         <div className={styles["menu-grid"]}>
-          {coffees.map((coffee) => (
+          {coffeesList.map((coffee) => (
             <div key={coffee.id} className={styles["menu-card"]}>
               <img src={coffee.img} alt={coffee.description} />
               <span className={styles["menu-category"]}>
                 <p>{coffee.category}</p>
               </span>
-              <h1 className={styles["menu-title"]}>{coffee.name}</h1>
+              <h1 className={styles["menu-title"]}>{coffee.coffeeName}</h1>
               <p className={styles["menu-description"]}>{coffee.description}</p>
               <div className={styles["menu-contentPrice"]}>
                 <p>
@@ -99,7 +102,9 @@ export function Home() {
                 </p>
                 <div className={styles["menu-quantity"]}>
                   <div className={styles["menu-quantity-input"]}>
-                    <span>
+                    <span
+                      onClick={() => handleChangeAmountCoffee(coffee.id, -1)}
+                    >
                       <Minus
                         size={14}
                         color="#8047F8"
@@ -107,8 +112,10 @@ export function Home() {
                         absoluteStrokeWidth
                       />
                     </span>
-                    <p>1</p>
-                    <span>
+                    <p>{coffee.quantidade}</p>
+                    <span
+                      onClick={() => handleChangeAmountCoffee(coffee.id, 1)}
+                    >
                       <Plus
                         size={14}
                         color="#8047F8"
@@ -117,7 +124,10 @@ export function Home() {
                       />
                     </span>
                   </div>
-                  <div className={styles["menu-quantity-icon"]}>
+                  <div
+                    className={styles["menu-quantity-icon"]}
+                    onClick={() => handleAddCoffeeOnCheckout(coffee.id)}
+                  >
                     <ShoppingCart
                       size={22}
                       color="#ffffff"

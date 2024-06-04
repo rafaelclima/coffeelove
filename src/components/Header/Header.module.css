@@ -39,4 +39,24 @@
   padding: .5rem;
   border-radius: 6px;
   background-color: var(--brand-yellow-light);
+
+  cursor: pointer;
+  position: relative;
+}
+
+.rootcart-quantity-items {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--brand-yellow-dark);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 20px;
+  font-size: .75rem;
+  font-weight: bold;
 }

@@ -191,6 +191,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .menu-quantity-input p {
@@ -207,6 +208,8 @@
   border-radius: 6px;
   padding: .5rem;
   background-color: var(--brand-purple-dark);
+
+  cursor: pointer;
 }
 
 

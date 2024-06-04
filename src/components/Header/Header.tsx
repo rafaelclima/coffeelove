@@ -1,8 +1,10 @@
-import styles from "./Header.module.css";
+import { MapPin, ShoppingCart } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+
+import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import { useEffect, useState } from "react";
-import { MapPin, ShoppingCart } from "lucide-react";
+import styles from "./Header.module.css";
 
 interface locationProp {
   city: string | null;
@@ -10,6 +12,7 @@ interface locationProp {
 }
 
 export function Header() {
+  const { coffeesOnCart } = useContext(CheckoutContext);
   const [actualCity, setActualCity] = useState<string | null>(null);
   const [actualState, setActualState] = useState<string | null>(null);
 
@@ -98,9 +101,17 @@ export function Header() {
           <MapPin size={22} color="#8047f8" strokeWidth={2.5} /> {actualCity},{" "}
           {actualState}
         </span>
-        <span className={styles.rootCart}>
+        <NavLink
+          to={coffeesOnCart.length > 0 ? "/checkout" : "/"}
+          className={styles.rootCart}
+        >
+          {coffeesOnCart.length > 0 && (
+            <span className={styles["rootcart-quantity-items"]}>
+              {coffeesOnCart.length}
+            </span>
+          )}
           <ShoppingCart size={22} color="#C47F17" strokeWidth={1.75} />
-        </span>
+        </NavLink>
       </nav>
     </header>
   );
