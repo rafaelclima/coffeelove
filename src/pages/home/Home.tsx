@@ -11,10 +11,25 @@ import { CheckoutContext } from "../../contexts/CheckoutContext";
 import imgHero from "../../assets/coffeeLove_Hero.png";
 import styles from "./Home.module.css";
 import { useContext } from "react";
+import { useToast } from "@chakra-ui/react";
 
 export function Home() {
   const { coffeesList, handleChangeAmountCoffee, handleAddCoffeeOnCheckout } =
     useContext(CheckoutContext);
+
+  const toast = useToast();
+
+  function addCoffeeAndOpenConfirmationToast(id: number, coffeeName: string) {
+    handleAddCoffeeOnCheckout(id);
+
+    toast({
+      title: `${coffeeName} adicionado ao carrinho`,
+      status: "success",
+      duration: 1500,
+      position: "top-right",
+      isClosable: true,
+    });
+  }
 
   return (
     <>
@@ -126,7 +141,12 @@ export function Home() {
                   </div>
                   <div
                     className={styles["menu-quantity-icon"]}
-                    onClick={() => handleAddCoffeeOnCheckout(coffee.id)}
+                    onClick={() =>
+                      addCoffeeAndOpenConfirmationToast(
+                        coffee.id,
+                        coffee.coffeeName
+                      )
+                    }
                   >
                     <ShoppingCart
                       size={22}
