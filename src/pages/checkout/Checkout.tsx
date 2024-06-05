@@ -5,16 +5,24 @@ import {
   Landmark,
   MapPinned,
 } from "lucide-react";
-import { SetStateAction, useContext, useState } from "react";
+import { SetStateAction, useContext, useEffect, useState } from "react";
 
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
 import React from "react";
 import styles from "./Checkout.module.css";
+import { useNavigate } from "react-router-dom";
 
 export function Checkout() {
   const { coffeesOnCart } = useContext(CheckoutContext);
   const [escolha, setEscolha] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (coffeesOnCart.length <= 0) {
+      navigate("/");
+    }
+  }, [coffeesOnCart, navigate]);
 
   const handleEscolha = (event: {
     target: { value: SetStateAction<string> };
