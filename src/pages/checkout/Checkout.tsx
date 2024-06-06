@@ -6,17 +6,40 @@ import {
   MapPinned,
 } from "lucide-react";
 import { SetStateAction, useContext, useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
 
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
 import React from "react";
 import styles from "./Checkout.module.css";
+import useDebounce from "../../hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
+
+interface Location {
+  type: string;
+  coordinates: {
+    longitude: string;
+    latitude: string;
+  };
+}
+
+interface CepData {
+  cep: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+  street: string;
+  service: string;
+  location: Location;
+}
 
 export function Checkout() {
   const { coffeesOnCart } = useContext(CheckoutContext);
   const [escolha, setEscolha] = useState("");
+  const [address, setAddress] = useState<CepData | null>(null);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     if (coffeesOnCart.length <= 0) {
@@ -40,6 +63,57 @@ export function Checkout() {
     return acc;
   }, 0);
 
+  const [inputValue, setInputValue] = useState("");
+  const debouncedSearchValues = useDebounce(inputValue, 800);
+
+  function handleChange(e: { target: { value: string } }) {
+    const { value } = e.target;
+    setInputValue(value);
+  }
+
+  async function fetchCepData(cep: string): Promise<CepData | null> {
+    try {
+      const response = await axios.get<CepData>(
+        `https://brasilapi.com.br/api/cep/v2/${cep}`
+      );
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+          toast({
+            title: "CEP não encontrado",
+            status: "error",
+            duration: 1500,
+            position: "top",
+            isClosable: true,
+          });
+        } else if (axiosError.request) {
+          toast({
+            title: "A requisição falhou, tente novamente.",
+            status: "error",
+            duration: 1500,
+            position: "top",
+            isClosable: true,
+          });
+        }
+      }
+      console.error("Erro:", error);
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    if (debouncedSearchValues.length >= 8) {
+      fetchCepData(debouncedSearchValues).then((data) => {
+        if (data) {
+          setAddress(data);
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchValues]);
+
   return (
     <main className={styles["checkout-container"]}>
       <div className={styles["checkout-order"]}>
@@ -59,8 +133,22 @@ export function Checkout() {
           </div>
 
           <form action="submit" className={styles["grid-form"]}>
-            <input type="number" name="cep" id={styles.cep} placeholder="CEP" />
-            <input type="text" name="rua" id={styles.rua} placeholder="Rua" />
+            <input
+              type="number"
+              name="cep"
+              id={styles.cep}
+              placeholder="CEP"
+              value={inputValue}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="rua"
+              id={styles.rua}
+              placeholder="Rua"
+              onChange={handleChange}
+              value={address?.street ? address.street : ""}
+            />
             <input
               type="number"
               name="numero"
@@ -78,14 +166,25 @@ export function Checkout() {
               name="bairro"
               id={styles.bairro}
               placeholder="Bairro"
+              value={address?.neighborhood}
+              onChange={handleChange}
             />
             <input
               type="text"
               name="cidade"
               id={styles.cidade}
               placeholder="Cidade"
+              value={address?.city}
+              onChange={handleChange}
             />
-            <input type="text" name="uf" id={styles.uf} placeholder="UF" />
+            <input
+              type="text"
+              name="uf"
+              id={styles.uf}
+              placeholder="UF"
+              value={address?.state}
+              onChange={handleChange}
+            />
           </form>
         </section>
 

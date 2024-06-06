@@ -107,6 +107,7 @@
 }
 
 .payment-option {
+  width: 100%;
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -126,6 +127,7 @@
 }
 
 .payment-option span {
+  width: 100%;
   align-self: center;
   text-transform: uppercase;
   font-size: .75rem;
