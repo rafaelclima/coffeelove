@@ -118,12 +118,15 @@ export function Checkout() {
     setEscolha(event.target.value);
   };
 
-  const handleSetData = useCallback((data: CepData) => {
-    setValue("cidade", data.city);
-    setValue("bairro", data.neighborhood);
-    setValue("rua", data.street);
-    setValue("uf", data.state);
-  }, []);
+  const handleSetData = useCallback(
+    (data: CepData) => {
+      setValue("cidade", data.city);
+      setValue("bairro", data.neighborhood);
+      setValue("rua", data.street);
+      setValue("uf", data.state);
+    },
+    [setValue]
+  );
 
   const handleFetchCepData = useCallback(
     async (clientCep: string) => {
