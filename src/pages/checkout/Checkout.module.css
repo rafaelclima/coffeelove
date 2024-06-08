@@ -69,6 +69,16 @@
   background-color: #EDEDED;
 }
 
+.grid-form span {
+  color: #d32f2f; /* cor do erro */
+  font-size: 0.875rem; /* ajuste conforme necessário */
+  margin-top: 0.25rem; /* espaço entre o input e a mensagem de erro */
+}
+
+.grid-form .error {
+  border-color: #d32f2f; /* cor da borda do input em erro */
+}
+
 /* Layout Specifics */
 #cep {
   grid-column: span 1;
@@ -91,13 +101,21 @@
 }
 
 #cidade {
-  grid-column: span 2; /* Ocupa três colunas */
+  grid-column: span 2; /* Ocupa duas colunas */
 }
 
 #uf {
-  grid-column: 4; /* Ocupa a quarta coluna */
+  grid-column: span 1; /* Ocupa uma coluna */
   width: 60px;
   justify-self: center; /* Ajusta a posição horizontal para o centro */
+}
+
+/* Additional CSS for error message at the end of the form */
+.grid-form .error-message {
+  grid-column: span 4;
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 1rem;
 }
 
 .payment-container {

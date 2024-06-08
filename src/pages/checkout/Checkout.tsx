@@ -5,16 +5,25 @@ import {
   Landmark,
   MapPinned,
 } from "lucide-react";
-import { SetStateAction, useContext, useEffect, useState } from "react";
+import {
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import axios, { AxiosError } from "axios";
 
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
 import React from "react";
+import { insertMaskOnCep } from "../../functions/cepMask";
 import styles from "./Checkout.module.css";
-import useDebounce from "../../hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Location {
   type: string;
@@ -34,12 +43,68 @@ interface CepData {
   location: Location;
 }
 
+const createOrderFormSchema = z
+  .object({
+    cep: z.string().min(9, "Informe um CEP válido"),
+    rua: z.string().min(1, "Campo é obrigatório"),
+    numero: z.string().min(1, "Campo é obrigatório"),
+    complemento: z.string().min(1, "Campo é obrigatório"),
+    bairro: z.string().min(1, "Campo é obrigatório"),
+    cidade: z.string().min(1, "Campo é obrigatório"),
+    uf: z.string().min(1, "Campo é obrigatório"),
+  })
+  .transform((field) => ({
+    cep: field.cep,
+    rua: field.rua,
+    numero: field.numero,
+    complemento: field.complemento,
+    bairro: field.bairro,
+    cidade: field.cidade,
+    uf: field.uf,
+  }));
+
+type FormData = z.infer<typeof createOrderFormSchema>;
+
 export function Checkout() {
   const { coffeesOnCart } = useContext(CheckoutContext);
   const [escolha, setEscolha] = useState("");
-  const [address, setAddress] = useState<CepData | null>(null);
+
   const navigate = useNavigate();
   const toast = useToast();
+
+  const totalItensOnCart = coffeesOnCart.reduce((acc, item) => {
+    acc += item.quantidade;
+    return acc;
+  }, 0);
+
+  const totalOrderPrice = coffeesOnCart.reduce((acc, item) => {
+    acc += item.quantidade * item.price;
+    return acc;
+  }, 0);
+
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormData>({
+    criteriaMode: "all",
+    mode: "all",
+    resolver: zodResolver(createOrderFormSchema),
+    defaultValues: {
+      cep: "",
+      rua: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
+      cidade: "",
+      uf: "",
+    },
+  });
+
+  const cep = watch("cep");
 
   useEffect(() => {
     if (coffeesOnCart.length <= 0) {
@@ -53,66 +118,70 @@ export function Checkout() {
     setEscolha(event.target.value);
   };
 
-  const totalItensOnCart = coffeesOnCart.reduce((acc, item) => {
-    acc += item.quantidade;
-    return acc;
-  }, 0);
+  const handleSetData = useCallback((data: CepData) => {
+    setValue("cidade", data.city);
+    setValue("bairro", data.neighborhood);
+    setValue("rua", data.street);
+    setValue("uf", data.state);
+  }, []);
 
-  const totalOrderPrice = coffeesOnCart.reduce((acc, item) => {
-    acc += item.quantidade * item.price;
-    return acc;
-  }, 0);
-
-  const [inputValue, setInputValue] = useState("");
-  const debouncedSearchValues = useDebounce(inputValue, 800);
-
-  function handleChange(e: { target: { value: string } }) {
-    const { value } = e.target;
-    setInputValue(value);
-  }
-
-  async function fetchCepData(cep: string): Promise<CepData | null> {
-    try {
-      const response = await axios.get<CepData>(
-        `https://brasilapi.com.br/api/cep/v2/${cep}`
-      );
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 404) {
-          toast({
-            title: "CEP não encontrado",
-            status: "error",
-            duration: 1500,
-            position: "top",
-            isClosable: true,
-          });
-        } else if (axiosError.request) {
-          toast({
-            title: "A requisição falhou, tente novamente.",
-            status: "error",
-            duration: 1500,
-            position: "top",
-            isClosable: true,
-          });
+  const handleFetchCepData = useCallback(
+    async (clientCep: string) => {
+      try {
+        const { data } = await axios.get<CepData>(
+          `https://brasilapi.com.br/api/cep/v2/${clientCep}`
+        );
+        handleSetData(data);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError;
+          if (axiosError.response?.status === 404) {
+            toast({
+              title: "CEP não encontrado",
+              status: "error",
+              duration: 1500,
+              position: "top",
+              isClosable: true,
+            });
+          } else if (axiosError.request) {
+            toast({
+              title: "A requisição falhou, tente novamente.",
+              status: "error",
+              duration: 1500,
+              position: "top",
+              isClosable: true,
+            });
+          }
         }
+        console.error("Erro:", error);
+        return null;
       }
-      console.error("Erro:", error);
-      return null;
-    }
-  }
+    },
+    [handleSetData, toast]
+  );
 
   useEffect(() => {
-    if (debouncedSearchValues.length >= 8) {
-      fetchCepData(debouncedSearchValues).then((data) => {
-        if (data) {
-          setAddress(data);
-        }
-      });
+    setValue("cep", insertMaskOnCep(cep));
+
+    if (cep.length !== 9) return;
+    if (cep.length === 9) {
+      const cepWithoutMask = cep.replace("-", "");
+      handleFetchCepData(cepWithoutMask);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchValues]);
+  }, [handleFetchCepData, setValue, cep]);
+
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    console.log(data);
+  };
+
+  const handleConfirmOrder = async () => {
+    const isValid = await trigger();
+    if (isValid) {
+      handleSubmit(onSubmit)();
+    } else {
+      console.log("Validation failed");
+    }
+  };
 
   return (
     <main className={styles["checkout-container"]}>
@@ -132,58 +201,58 @@ export function Checkout() {
             </div>
           </div>
 
-          <form action="submit" className={styles["grid-form"]}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className={styles["grid-form"]}
+          >
             <input
-              type="number"
-              name="cep"
+              type="text"
               id={styles.cep}
               placeholder="CEP"
-              value={inputValue}
-              onChange={handleChange}
+              maxLength={9}
+              {...register("cep")}
             />
             <input
               type="text"
-              name="rua"
               id={styles.rua}
               placeholder="Rua"
-              onChange={handleChange}
-              value={address?.street ? address.street : ""}
+              {...register("rua")}
+              className={errors.rua ? styles.error : ""}
             />
             <input
               type="number"
-              name="numero"
               id={styles.numero}
               placeholder="Número"
+              {...register("numero")}
+              className={errors.numero ? styles.error : ""}
             />
             <input
               type="text"
-              name="complemento"
               id={styles.complemento}
               placeholder="Complemento"
+              {...register("complemento")}
+              className={errors.complemento ? styles.error : ""}
             />
             <input
               type="text"
-              name="bairro"
               id={styles.bairro}
               placeholder="Bairro"
-              value={address?.neighborhood}
-              onChange={handleChange}
+              {...register("bairro")}
+              className={errors.bairro ? styles.error : ""}
             />
             <input
               type="text"
-              name="cidade"
               id={styles.cidade}
               placeholder="Cidade"
-              value={address?.city}
-              onChange={handleChange}
+              {...register("cidade")}
+              className={errors.cidade ? styles.error : ""}
             />
             <input
               type="text"
-              name="uf"
               id={styles.uf}
               placeholder="UF"
-              value={address?.state}
-              onChange={handleChange}
+              {...register("uf")}
+              className={errors.uf ? styles.error : ""}
             />
           </form>
         </section>
@@ -294,7 +363,11 @@ export function Checkout() {
             </div>
           </div>
 
-          <button className={styles["confirm-total-button"]}>
+          <button
+            type="button"
+            onClick={handleConfirmOrder}
+            className={styles["confirm-total-button"]}
+          >
             Confirmar pedido
           </button>
         </div>
