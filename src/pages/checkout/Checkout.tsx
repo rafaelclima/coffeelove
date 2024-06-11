@@ -5,72 +5,29 @@ import {
   Landmark,
   MapPinned,
 } from "lucide-react";
-import {
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import axios, { AxiosError } from "axios";
+import { useContext, useEffect, useState } from "react";
 
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { CheckoutItens } from "../../components/CheckoutItens/CheckoutItens";
 import React from "react";
-import { insertMaskOnCep } from "../../functions/cepMask";
 import styles from "./Checkout.module.css";
+import { useCepValidate } from "../../hooks/useCepValidate";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-interface Location {
-  type: string;
-  coordinates: {
-    longitude: string;
-    latitude: string;
-  };
-}
-
-interface CepData {
-  cep: string;
-  state: string;
-  city: string;
-  neighborhood: string;
-  street: string;
-  service: string;
-  location: Location;
-}
-
-const createOrderFormSchema = z
-  .object({
-    cep: z.string().min(9, "Informe um CEP válido"),
-    rua: z.string().min(1, "Campo é obrigatório"),
-    numero: z.string().min(1, "Campo é obrigatório"),
-    complemento: z.string().min(1, "Campo é obrigatório"),
-    bairro: z.string().min(1, "Campo é obrigatório"),
-    cidade: z.string().min(1, "Campo é obrigatório"),
-    uf: z.string().min(1, "Campo é obrigatório"),
-  })
-  .transform((field) => ({
-    cep: field.cep,
-    rua: field.rua,
-    numero: field.numero,
-    complemento: field.complemento,
-    bairro: field.bairro,
-    cidade: field.cidade,
-    uf: field.uf,
-  }));
-
-type FormData = z.infer<typeof createOrderFormSchema>;
 
 export function Checkout() {
   const { coffeesOnCart } = useContext(CheckoutContext);
-  const [escolha, setEscolha] = useState("");
+  const [paymentChoose, setPaymentChoose] = useState("");
+  const {
+    errors,
+    cep,
+    register,
+    setValue,
+    handleConfirmOrder,
+    onSubmit,
+    handleSubmit,
+  } = useCepValidate();
 
   const navigate = useNavigate();
-  const toast = useToast();
 
   const totalItensOnCart = coffeesOnCart.reduce((acc, item) => {
     acc += item.quantidade;
@@ -82,29 +39,7 @@ export function Checkout() {
     return acc;
   }, 0);
 
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<FormData>({
-    criteriaMode: "all",
-    mode: "all",
-    resolver: zodResolver(createOrderFormSchema),
-    defaultValues: {
-      cep: "",
-      rua: "",
-      numero: "",
-      complemento: "",
-      bairro: "",
-      cidade: "",
-      uf: "",
-    },
-  });
-
-  const cep = watch("cep");
+  const deliveryPrice = 9.99;
 
   useEffect(() => {
     if (coffeesOnCart.length <= 0) {
@@ -112,78 +47,9 @@ export function Checkout() {
     }
   }, [coffeesOnCart, navigate]);
 
-  const handleEscolha = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setEscolha(event.target.value);
-  };
-
-  const handleSetData = useCallback(
-    (data: CepData) => {
-      setValue("cidade", data.city);
-      setValue("bairro", data.neighborhood);
-      setValue("rua", data.street);
-      setValue("uf", data.state);
-    },
-    [setValue]
-  );
-
-  const handleFetchCepData = useCallback(
-    async (clientCep: string) => {
-      try {
-        const { data } = await axios.get<CepData>(
-          `https://brasilapi.com.br/api/cep/v2/${clientCep}`
-        );
-        handleSetData(data);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          const axiosError = error as AxiosError;
-          if (axiosError.response?.status === 404) {
-            toast({
-              title: "CEP não encontrado",
-              status: "error",
-              duration: 1500,
-              position: "top",
-              isClosable: true,
-            });
-          } else if (axiosError.request) {
-            toast({
-              title: "A requisição falhou, tente novamente.",
-              status: "error",
-              duration: 1500,
-              position: "top",
-              isClosable: true,
-            });
-          }
-        }
-        console.error("Erro:", error);
-        return null;
-      }
-    },
-    [handleSetData, toast]
-  );
-
-  useEffect(() => {
-    setValue("cep", insertMaskOnCep(cep));
-
-    if (cep.length !== 9) return;
-    if (cep.length === 9) {
-      const cepWithoutMask = cep.replace("-", "");
-      handleFetchCepData(cepWithoutMask);
-    }
-  }, [handleFetchCepData, setValue, cep]);
-
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
-  };
-
-  const handleConfirmOrder = async () => {
-    const isValid = await trigger();
-    if (isValid) {
-      handleSubmit(onSubmit)();
-    } else {
-      console.log("Validation failed");
-    }
+  const handlePaymentChoose = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPaymentChoose(event.target.value);
+    setValue("formaPagamento", event.target.value);
   };
 
   return (
@@ -279,14 +145,14 @@ export function Checkout() {
           <div className={styles["payment-container"]}>
             <label
               className={`${styles["payment-option"]} ${
-                escolha === "opcao1" && styles["payment-selected"]
+                paymentChoose === "creditCard" && styles["payment-selected"]
               }`}
             >
               <input
                 type="radio"
-                value="opcao1"
-                checked={escolha === "opcao1"}
-                onChange={handleEscolha}
+                value="creditCard"
+                checked={paymentChoose === "creditCard"}
+                onChange={handlePaymentChoose}
               />
               <CreditCard
                 size={16}
@@ -299,14 +165,14 @@ export function Checkout() {
 
             <label
               className={`${styles["payment-option"]} ${
-                escolha === "opcao2" && styles["payment-selected"]
+                paymentChoose === "debitCard" && styles["payment-selected"]
               }`}
             >
               <input
                 type="radio"
-                value="opcao2"
-                checked={escolha === "opcao2"}
-                onChange={handleEscolha}
+                value="debitCard"
+                checked={paymentChoose === "debitCard"}
+                onChange={handlePaymentChoose}
               />
               <Landmark
                 size={16}
@@ -319,14 +185,14 @@ export function Checkout() {
 
             <label
               className={`${styles["payment-option"]} ${
-                escolha === "opcao3" && styles["payment-selected"]
+                paymentChoose === "cash" && styles["payment-selected"]
               }`}
             >
               <input
                 type="radio"
-                value="opcao3"
-                checked={escolha === "opcao3"}
-                onChange={handleEscolha}
+                value="cash"
+                checked={paymentChoose === "cash"}
+                onChange={handlePaymentChoose}
               />
               <Banknote
                 size={16}
@@ -336,6 +202,11 @@ export function Checkout() {
               />
               <span>Dinheiro</span>
             </label>
+            {cep.length === 9 && errors.formaPagamento && (
+              <span className={styles["payment-error"]}>
+                É necessário escolher uma forma de pagamento.
+              </span>
+            )}
           </div>
         </section>
       </div>
@@ -358,17 +229,23 @@ export function Checkout() {
             </div>
             <div className={styles["confirm-total-delivery"]}>
               <p>Entrega</p>
-              <span>R$ 9,99</span>
+              <span>R$ {deliveryPrice}</span>
             </div>
             <div className={styles["confirm-total-totalPrice"]}>
               <p>Total</p>
-              <span>R$ {totalOrderPrice.toFixed(2)}</span>
+              <span>R$ {(totalOrderPrice + deliveryPrice).toFixed(2)}</span>
             </div>
           </div>
 
           <button
             type="button"
             onClick={handleConfirmOrder}
+            disabled={cep.length > 0 ? false : true}
+            title={
+              cep.length > 0
+                ? ""
+                : "Preencha o endereço e escolha a forma de pagamento!"
+            }
             className={styles["confirm-total-button"]}
           >
             Confirmar pedido
