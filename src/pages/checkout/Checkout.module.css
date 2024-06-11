@@ -162,6 +162,14 @@
   margin-right: 12px;
 }
 
+.payment-error {
+  width: 100%;
+  grid-column: span 3;
+  font-size: .875rem;
+  font-family: 'Roboto', sans-serif;
+  color: red;
+}
+
 .confirm-container {
   max-width: 28rem;
   padding: 2.5rem;
@@ -222,4 +230,9 @@
 
 .confirm-total-button:hover {
   background-color: var(--brand-yellow-dark);
+}
+
+.confirm-total-button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
 }
