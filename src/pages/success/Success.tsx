@@ -1,8 +1,21 @@
 import { Clock3, DollarSign, MapPin } from "lucide-react";
-import styles from "./Success.module.css";
+import { useContext, useEffect } from "react";
+
+import { CheckoutContext } from "../../contexts/CheckoutContext";
 import deliveryImg from "../../assets/delivery.svg";
+import styles from "./Success.module.css";
+import { useNavigate } from "react-router-dom";
 
 export function Success() {
+  const { successItens } = useContext(CheckoutContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!successItens) {
+      navigate("/");
+    }
+  }, [successItens, navigate]);
+
   return (
     <main className={styles["success-container"]}>
       <section className={styles["success-texts"]}>
@@ -23,9 +36,15 @@ export function Success() {
             </span>
             <div>
               <p>
-                Entrega em <strong>Rua Coronel Auris Coelho, 970</strong>
+                Entrega em{" "}
+                <strong>
+                  {successItens?.rua}, {successItens?.numero}
+                </strong>
               </p>
-              <p>Lagoa Nova - Natal, RN</p>
+              <p>
+                {successItens?.bairro} - {successItens?.cidade},{" "}
+                {successItens?.uf}
+              </p>
             </div>
           </div>
 
@@ -59,7 +78,7 @@ export function Success() {
             </span>
             <div>
               <p>Pagamento na entrega</p>
-              <strong>Cartão de crédito</strong>
+              <strong>{successItens?.formaPagamento}</strong>
             </div>
           </div>
         </div>
