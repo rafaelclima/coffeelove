@@ -12,27 +12,47 @@ export interface CoffeeCheckoutProps {
   quantidade: number;
 }
 
+interface successItensProps {
+  cep: string;
+  rua: string;
+  numero: string;
+  complemento?: string; // Propriedade opcional
+  bairro: string;
+  cidade: string;
+  uf: string;
+  formaPagamento: string;
+}
+
 interface CheckoutContextProps {
   coffeesList: CoffeeCheckoutProps[];
-  handleChangeAmountCoffee: (id: number, delta: number) => void;
   coffeesOnCart: CoffeeCheckoutProps[];
+  successItens: successItensProps | null;
+  setCoffeesOnCart: React.Dispatch<CoffeeCheckoutProps[]>;
+  handleChangeAmountCoffee: (id: number, delta: number) => void;
   handleAddCoffeeOnCheckout: (id: number) => void;
   handleChangeQuantityCoffeeOnCheckout: (id: number, delta: number) => void;
   handleRemoveCoffeeOnCheckout: (id: number) => void;
+  setItensOnSuccessPage: (data: successItensProps) => void;
 }
 
 export const CheckoutContext = createContext<CheckoutContextProps>({
   coffeesList: [],
-  handleChangeAmountCoffee: () => {},
   coffeesOnCart: [],
+  successItens: null,
+  setCoffeesOnCart: () => [],
+  handleChangeAmountCoffee: () => {},
   handleAddCoffeeOnCheckout: () => {},
   handleChangeQuantityCoffeeOnCheckout: () => {},
   handleRemoveCoffeeOnCheckout: () => {},
+  setItensOnSuccessPage: () => {},
 });
 
 export function CheckoutContextProvider({ children }: { children: ReactNode }) {
   const { coffees } = coffeeMenu;
   const [coffeesOnCart, setCoffeesOnCart] = useState<CoffeeCheckoutProps[]>([]);
+  const [successItens, setSuccessItens] = useState<successItensProps | null>(
+    null
+  );
   const [coffeesList, setCoffeesList] = useState<CoffeeCheckoutProps[]>(() =>
     coffees.map((coffee: CoffeeCheckoutProps) => ({
       id: coffee.id,
@@ -89,13 +109,20 @@ export function CheckoutContextProvider({ children }: { children: ReactNode }) {
     setCoffeesOnCart(removeCoffee);
   }
 
+  function setItensOnSuccessPage(data: successItensProps) {
+    setSuccessItens(data);
+  }
+
   const coffeesContext: CheckoutContextProps = {
     coffeesList,
-    handleChangeAmountCoffee,
     coffeesOnCart,
+    successItens,
+    setCoffeesOnCart,
+    handleChangeAmountCoffee,
     handleAddCoffeeOnCheckout,
     handleChangeQuantityCoffeeOnCheckout,
     handleRemoveCoffeeOnCheckout,
+    setItensOnSuccessPage,
   };
 
   return (
