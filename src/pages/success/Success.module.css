@@ -101,3 +101,41 @@
 .success-image {
   align-self: flex-end;
 }
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+  
+}
+
+@media (max-width: 768px) {
+  
+}
+
+@media (max-width: 480px) {
+  .success-container {
+    flex-direction: column;
+    margin-top: 1rem;
+  }
+  
+  .success-texts {
+    gap: 1.5rem;
+  }
+
+  .success-texts-title h2, .success-texts-title p {
+    text-align: center;
+  }
+  
+  .success-texts-delivery-info {
+    position: relative;
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .success-image {
+    width: 80%;
+    height: 80%;
+    align-self: center;
+    justify-self: center;
+    margin-top: 1rem;
+  }
+}
