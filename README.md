@@ -46,7 +46,7 @@ Este projeto foi construído utilizando as seguintes tecnologias:
 
 ## 📸 Capturas de Tela
 
-![Coffe Love](https://github.com/rafaelclima/coffeelove/blob/master/.gitassets/pc_01.png)
+![Coffe Love](https://github.com/rafaelclima/coffeelove/blob/master/.gitassets/pc_01.png?raw=true)
 
 ## 📜 Licença
 
