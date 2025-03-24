@@ -1,7 +1,7 @@
 # Coffee Love ❤️
 
 <div align="center">
-  <img src="./src/assets/logo.png" alt="Coffee Love Logo" width="200">
+  <img src="./src/assets/logo.png" alt="Coffee Love Logo" width="480">
 </div>
 
 <div align="center">
