@@ -1,7 +1,7 @@
 # Coffee Love ❤️
 
 <div align="center">
-  <img src="./src/assets/logo.png" alt="Coffee Love Logo" width="480">
+  <img src="https://github.com/rafaelclima/coffeelove/blob/master/src/assets/logo.png" alt="Coffee Love Logo" width="480">
 </div>
 
 <div data-badges>
