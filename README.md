@@ -2,10 +2,13 @@
 
 ![Coffee Love Logo](./src/assets/logo.png)
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Zod](https://img.shields.io/badge/Zod-3498DB?style=for-the-badge&logo=zod&logoColor=white)
+<div data-badges>
+  ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+  ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+  ![Zod](https://img.shields.io/badge/Zod-3498DB?style=for-the-badge&logo=zod&logoColor=white)
+</div>div>
+
 
 **Uma aplicação web deliciosa para os entusiastas do café!**
 
